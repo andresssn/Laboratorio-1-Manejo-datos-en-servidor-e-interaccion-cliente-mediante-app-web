@@ -1,27 +1,16 @@
-<!DOCTYPE html>
-<head>
-  <title>Admin</title>
-</head>
-<body>
+<?php @session_start();?> 
  <?php 
+ //session_start();
 ob_start();
 include 'Controlador.php';
 $producto=new Producto();
 echo  '<br></br><h1>Monedas antiguas</h1>';
-session_start();
 if(isset($_SESSION['user'])&&isset($_SESSION['password'])&&isset($_SESSION['userman'])) {
   echo "Your session is running: " . $_SESSION['user'];
   echo("<button onclick=\"location.href='login.php'\">Logout</button><pre>");
-}
-else{
-    session_unset();
-    session_destroy();
-    header('location:index.php');
-    exit(); 
-}
-ob_end_flush();
-?> 
-<center>
+  $res=$producto->Show();
+  echo'
+  <center>
   <table border="2">
     <thead>
       <tr>
@@ -36,23 +25,30 @@ ob_end_flush();
       </tr>
     </thead>
     <tbody>
-      <?php
-        $res=$producto->Show();
-        while($row=$res->fetch_assoc()){
-      ?>
-          <tr>
-            <td><?php echo $row['id']; ?></td>
-            <td><?php echo $row['nombre']; ?></td>
-            <td><?php echo $row['precio']; ?></td>
-            <td><img height="75px" src="data:image/jpg;base64,<?php echo base64_encode($row['imagen']);?>"/></td>
-            <th><a href="V_Update.php?id=<?php echo $row['id'];?>">Modificar</a></th>
-            <th><a href="C_Delete.php?id=<?php echo $row['id'];?>">Eliminar</a></th>
-          </tr>
-      <?php
-        }
-      ?>
+    ';
+   
+  while($row=$res->fetch_assoc()){
+    echo'
+      <tr>
+      <td>'.$row['id'].'</td>
+      <td>'.$row['nombre'].'</td>
+      <td>'.$row['precio'].'</td>
+      <td><img height="75px" src="data:image/jpg;base64,'.base64_encode($row['imagen']).'"/></td>
+      <th><a href="V_Update.php?id='.$row['id'].'">Modificar</a></th>
+      <th><a href="C_Delete.php?id='.$row['id'].'">Eliminar</a></th>
+    </tr>';
+  }
+  echo'
     </tbody>
   </table>
-</center>
-</body>
-</html>
+  </center>
+  ';
+}
+else{
+    session_unset();
+    session_destroy();
+    header('location:index.php');
+    exit(); 
+}
+ob_end_flush();
+?>
